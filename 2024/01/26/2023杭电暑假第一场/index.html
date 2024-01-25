@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"huamuyichun.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="第一场 题目链接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023杭电暑假第一场">
+<meta property="og:url" content="http://huamuyichun.github.io/2024/01/26/2023%E6%9D%AD%E7%94%B5%E6%9A%91%E5%81%87%E7%AC%AC%E4%B8%80%E5%9C%BA/index.html">
+<meta property="og:site_name" content="hmyc_blog">
+<meta property="og:description" content="第一场 题目链接">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-25T21:31:04.000Z">
+<meta property="article:modified_time" content="2024-01-25T22:01:10.283Z">
+<meta property="article:author" content="Sparrow">
+<meta property="article:tag" content="SG">
+<meta property="article:tag" content="LCA">
+<meta property="article:tag" content="扩展欧几里得">
+<meta property="article:tag" content="树上dp">
+<meta property="article:tag" content="最小表示法">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://huamuyichun.github.io/2024/01/26/2023%E6%9D%AD%E7%94%B5%E6%9A%91%E5%81%87%E7%AC%AC%E4%B8%80%E5%9C%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2023杭电暑假第一场 | hmyc_blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">hmyc_blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://huamuyichun.github.io/2024/01/26/2023%E6%9D%AD%E7%94%B5%E6%9A%91%E5%81%87%E7%AC%AC%E4%B8%80%E5%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sparrow">
+      <meta itemprop="description" content="不知所措才是人生">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hmyc_blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2023杭电暑假第一场
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-26 05:31:04 / 修改时间：06:01:10" itemprop="dateCreated datePublished" datetime="2024-01-26T05:31:04+08:00">2024-01-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/" itemprop="url" rel="index"><span itemprop="name">cs</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E7%AE%97%E6%B3%95/%E6%AF%94%E8%B5%9B/" itemprop="url" rel="index"><span itemprop="name">比赛</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E7%AE%97%E6%B3%95/%E6%AF%94%E8%B5%9B/2023%E6%9D%AD%E7%94%B5%E6%9A%91%E5%81%87/" itemprop="url" rel="index"><span itemprop="name">2023杭电暑假</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第一场"><a href="#第一场" class="headerlink" title="第一场"></a>第一场</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://vjudge.net/article/3840">题目链接</a></p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="1001-LCA加扩展欧几里，编程能力"><a href="#1001-LCA加扩展欧几里，编程能力" class="headerlink" title="1001 LCA加扩展欧几里，编程能力"></a>1001 LCA加扩展欧几里，编程能力</h2><p>题意：树上两人分别按照同样的速度按照不同的路径做往返运动，问能否相遇，最早相遇在哪？</p>
+<p>实际上[[LCA|公共祖先]]加[[扩展欧几里得]]，编程能力要求挺高的。</p>
+<hr>
+<h2 id="1002-树形dp"><a href="#1002-树形dp" class="headerlink" title="1002 树形dp"></a>1002 树形dp</h2><p>题意：给定一个$n$个节点的树，在每个点安装一个路由器都要花费$cost[i]$，如果在某个点安装路由器则会该店的邻域都会被覆盖到，要使路由器能覆盖树上所有节点，求最小的$cost$ </p>
+<p>该题实际上是一个[[树上dp|版子题]]，主要考虑了三种情况</p>
+<ol>
+<li>$f[u][0]$表示选点$u$且以$u$为根的子树每个点都被覆盖的最少花费</li>
+<li>$f[u][1]$表示不选点$u$且以$u$被儿子覆盖的最少花费</li>
+<li>$f[u][2]$表示不选点$u$且不被$u$的儿子覆盖且$u$的儿子全被覆盖的最少花费(实际上就是被$u$的父亲覆盖)</li>
+</ol>
+<p>那么对应的状态转移方程是</p>
+<ol>
+<li>u的儿子可选也可不选$$f[u][0]&#x3D;Σmin(f[v][0],f[v][1],f[v][2])$$</li>
+<li>由于u被父亲覆盖，则$u$的儿子只能被儿子自己或者儿子的儿子覆盖$$f[u][2]&#x3D;Σmin(f[v][1],f[v][2])$$</li>
+<li>如果$u$存在一个儿子$v$满足$f[v][0]&lt;&#x3D;f[v][1]$，那么此时为$$f[u][1]&#x3D;Σmin(f[v][0],f[v][1])$$</li>
+<li>如果不存在这样一个儿子，也就是说所有儿子只能选了更劣，那就挑选一个最少的$$minn&#x3D;min(f[v][0],f[v][1]$$ $$f[u][1]&#x3D;Σmin(f[v][1],f[v][0])$$<br>代码如下:<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; g[N];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> f[N][N];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> a[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> u,<span class="type">int</span> fa)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    f[u][<span class="number">0</span>]=a[u];</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> sum=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> j:g[u])&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(j==fa) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">dfs</span>(j,u);</span><br><span class="line"></span><br><span class="line">        f[u][<span class="number">2</span>]+=<span class="built_in">min</span>(f[j][<span class="number">1</span>],f[j][<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">        f[u][<span class="number">0</span>]+=<span class="built_in">min</span>(f[j][<span class="number">0</span>],<span class="built_in">min</span>(f[j][<span class="number">1</span>],f[j][<span class="number">2</span>]));</span><br><span class="line"></span><br><span class="line">        sum+=<span class="built_in">min</span>(f[j][<span class="number">0</span>],f[j][<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    f[u][<span class="number">1</span>]=<span class="number">1e18</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> j:g[u])&#123;</span><br><span class="line"></span><br><span class="line">        f[u][<span class="number">1</span>]=<span class="built_in">min</span>(f[u][<span class="number">1</span>],sum-<span class="built_in">min</span>(f[j][<span class="number">0</span>],f[j][<span class="number">1</span>])+f[j][<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h2 id="1005-字符串匹配问题"><a href="#1005-字符串匹配问题" class="headerlink" title="1005 字符串匹配问题"></a>1005 字符串匹配问题</h2><p>题意：给出n个字符串和Q次查询，每次询问第x个字符串和第y个字符串是不是循环同构的。</p>
+<ol>
+<li>首先先看[[最小表示法]]，我们只需要求出每个字符串的最小表示即可，当并且先预处理记住，这样需要比较的时候我们直接查询O(1)即可，由于字符串比较可能慢，所以用哈希值比较即可。</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">ll base1 = <span class="number">201326611</span>, base2 = <span class="number">805306457</span>, p1 = <span class="number">402653189</span>, p2 = <span class="number">1610612741</span>;           </span><br><span class="line"><span class="comment">//用hash函数建立hash表</span></span><br><span class="line"><span class="function">vector&lt;ll&gt; <span class="title">has1</span><span class="params">(<span class="number">15100</span>)</span>, <span class="title">has2</span><span class="params">(<span class="number">15100</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">hash1</span><span class="params">(string t)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len=t.<span class="built_in">size</span>();</span><br><span class="line"></span><br><span class="line">    has1[<span class="number">0</span>]=t[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;len;i++)&#123;</span><br><span class="line"></span><br><span class="line">        has1[i]=(has1[i<span class="number">-1</span>]*base1+t[i])%p1;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> has1[len<span class="number">-1</span>];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">hash2</span><span class="params">(string t)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len=t.<span class="built_in">size</span>();</span><br><span class="line"></span><br><span class="line">    has2[<span class="number">0</span>]=t[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;len;i++)&#123;</span><br><span class="line"></span><br><span class="line">        has2[i]=(has2[i<span class="number">-1</span>]*base2+t[i])%p2;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> has2[len<span class="number">-1</span>];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最小表示法</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> k=<span class="number">0</span>,i=<span class="number">0</span>,j=<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(k&lt;m&amp;&amp;i&lt;m&amp;&amp;j&lt;m)&#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(s[(i+k)%m]==s[(j+k)%m]) k++;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">                s[(i+k)%m]&gt;s[(j+k)%m]?i=i+k+<span class="number">1</span>:j=j+k+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(i==j) i++;</span><br><span class="line"></span><br><span class="line">                k=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        i=<span class="built_in">min</span>(i,j);</span><br><span class="line"></span><br><span class="line">        string ss=s;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> q=<span class="number">0</span>;q&lt;m;q++)&#123;</span><br><span class="line"></span><br><span class="line">            ss[q]=s[(q+i)%m];</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>该方法是用双倍原字符串，然后[[kmp]]即可。不过这题卡常，需要用到</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>),cin.<span class="built_in">tie</span>(<span class="number">0</span>),cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="1009-签到"><a href="#1009-签到" class="headerlink" title="1009 签到"></a>1009 签到</h2><p>题意：就是n个东西放m个抽屉里能否放下。</p>
+<p>抽屉原理即可</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> d = (m - <span class="number">1</span>) / n + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (x &lt;= d) &#123;</span><br><span class="line"></span><br><span class="line">            cout &lt;&lt; <span class="string">&quot;Yes\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">            cout &lt;&lt; <span class="string">&quot;No\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="1012-博弈论"><a href="#1012-博弈论" class="headerlink" title="1012 博弈论"></a>1012 博弈论</h2><p>题意：AB在一棵可以以任何节点为根的树上做游戏，每次删除选定的节点及其子树，谁没得删即胜利，求获胜概率。</p>
+<p>表面上是一个概率问题，实际上是一个 [[SG函数]] 博弈论，因为对于不同的点为根的情况都会导致必胜或者必败而没有其他情况。本题实际上是一个树上Nim游戏，每次会删除某个节点的子树。</p>
+<p>考虑每棵树的SG函数</p>
+<p>$$SG(u)&#x3D;(SG(v1)+1) XOR (SG(v2)+1)…$$</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs1</span><span class="params">(<span class="type">int</span> u,<span class="type">int</span> fa)</span></span>&#123;            <span class="comment">//求以1为根的各个节点的SG</span></span><br><span class="line"></span><br><span class="line">    f[u]=g[u]=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> v:G[u])&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(v==fa) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">dfs1</span>(v,u);</span><br><span class="line"></span><br><span class="line">        f[u]^=f[v]+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是因为考虑叶节点，先手必输，所以它父节点的SG函数就是它儿子节点SG+1的异或和。然后题目需要求所有节点分别作为根节点的必胜与否，所以需要先求出一个根节点的SG函数，然后进行换根，最后求得所有节点作为根的SG函数。</p>
+<p>从u-&gt;v实际上v现在变成根了，需要u为根时的SG和原来的v的SG异或以去掉这部分，然后异或v的子树的这部分</p>
+<p>$$g(v)&#x3D;((f(v)+1)XORg(u)+1)XORf(v)$$</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs2</span><span class="params">(<span class="type">int</span> u,<span class="type">int</span> fa)</span></span>&#123;            <span class="comment">//通过换根，求各个点为根节点的SG</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> v:G[u])&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(v==fa) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">        g[v]=f[v]^(g[u]^(f[v]+<span class="number">1</span>)+<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">dfs2</span>(v,u);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SG/" rel="tag"># SG</a>
+              <a href="/tags/LCA/" rel="tag"># LCA</a>
+              <a href="/tags/%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97/" rel="tag"># 扩展欧几里得</a>
+              <a href="/tags/%E6%A0%91%E4%B8%8Adp/" rel="tag"># 树上dp</a>
+              <a href="/tags/%E6%9C%80%E5%B0%8F%E8%A1%A8%E7%A4%BA%E6%B3%95/" rel="tag"># 最小表示法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/26/%E4%BB%80%E4%B9%88%E6%98%AF%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" rel="prev" title="什么是模糊测试">
+      <i class="fa fa-chevron-left"></i> 什么是模糊测试
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/26/2023%E6%9D%AD%E7%94%B5%E6%9A%91%E5%81%87%E7%AC%AC%E4%BA%8C%E5%9C%BA/" rel="next" title="2023杭电暑假第二场">
+      2023杭电暑假第二场 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%9C%BA"><span class="nav-number">1.</span> <span class="nav-text">第一场</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1001-LCA%E5%8A%A0%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%EF%BC%8C%E7%BC%96%E7%A8%8B%E8%83%BD%E5%8A%9B"><span class="nav-number">1.1.</span> <span class="nav-text">1001 LCA加扩展欧几里，编程能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1002-%E6%A0%91%E5%BD%A2dp"><span class="nav-number">1.2.</span> <span class="nav-text">1002 树形dp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1005-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">1005 字符串匹配问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1009-%E7%AD%BE%E5%88%B0"><span class="nav-number">1.4.</span> <span class="nav-text">1009 签到</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1012-%E5%8D%9A%E5%BC%88%E8%AE%BA"><span class="nav-number">1.5.</span> <span class="nav-text">1012 博弈论</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sparrow"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sparrow</p>
+  <div class="site-description" itemprop="description">不知所措才是人生</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huamuyichun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huamuyichun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2486013181@qq.com" title="E-Mail → mailto:2486013181@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/hejiawenze" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;hejiawenze" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>Google</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2023-04 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sparrow</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共10.5k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
