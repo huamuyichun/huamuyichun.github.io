@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"huamuyichun.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Shell 该笔记来源于MIT-missing semeter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shell">
+<meta property="og:url" content="http://huamuyichun.github.io/2024/01/26/shell/index.html">
+<meta property="og:site_name" content="hmyc_blog">
+<meta property="og:description" content="Shell 该笔记来源于MIT-missing semeter">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-25T20:59:57.000Z">
+<meta property="article:modified_time" content="2024-01-25T21:06:18.719Z">
+<meta property="article:author" content="Sparrow">
+<meta property="article:tag" content="tools">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://huamuyichun.github.io/2024/01/26/shell/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>shell | hmyc_blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">hmyc_blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://huamuyichun.github.io/2024/01/26/shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sparrow">
+      <meta itemprop="description" content="不知所措才是人生">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hmyc_blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          shell
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-26 04:59:57 / 修改时间：05:06:18" itemprop="dateCreated datePublished" datetime="2024-01-26T04:59:57+08:00">2024-01-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/" itemprop="url" rel="index"><span itemprop="name">cs</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/missing-semester/" itemprop="url" rel="index"><span itemprop="name">missing semester</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/missing-semester/shell/" itemprop="url" rel="index"><span itemprop="name">shell</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h1><blockquote>
+<p>该笔记来源于<a target="_blank" rel="noopener" href="https://missing-semester-cn.github.io/2020/course-shell/">MIT-missing semeter</a></p>
+</blockquote>
+<hr>
+<span id="more"></span>
+
+<h2 id="shell是什么"><a href="#shell是什么" class="headerlink" title="shell是什么"></a>shell是什么</h2><ul>
+<li><p><strong>shell</strong> 是一种计算机程序</p>
+</li>
+<li><p>他为用户提供了与操作系统内核进行交互的界面</p>
+</li>
+<li><p>它是一种文本接入入口，相比于图形交互和语音交互，它的功能更加强大</p>
+</li>
+</ul>
+<hr>
+<h2 id="shell的一些简介"><a href="#shell的一些简介" class="headerlink" title="shell的一些简介"></a>shell的一些简介</h2><ul>
+<li><p>shell基于<strong>空格</strong>执行程序，程序后面是希望调用的参数</p>
+</li>
+<li><p>可以对参数进行转义，要么使用<strong>单引号，双引号</strong>，要么使用转移符号 \</p>
+</li>
+<li><p>shell是一个编程环境，在shell中执行命令时，实际上就是在执行一段shell可以解释执行的代码</p>
+</li>
+<li><p>如果你要求shell执行某个指令但是该指令并不是shell所了解的编程关键字时，那么它会咨询环境变量 <code>$PATH</code> 他会列出shell接到某条指令时，进行程序搜索的路径。</p>
+</li>
+</ul>
+<hr>
+<h2 id="shell的基本操作"><a href="#shell的基本操作" class="headerlink" title="shell的基本操作"></a>shell的基本操作</h2><ol>
+<li><p>打开shell，第一行是提示符 ，可以看到如下代码，是给出了当前目录或者说<strong>所在位置</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">root@LAPTOP-V6PDFH7U:~#</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>然后执行程序  <code>date</code> 和 <code>echo</code> ，可以看到输出结果，它会去咨询<code>$PATH</code>环境变量</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:~# echo Hello\ World</span><br><span class="line">Hello World</span><br><span class="line">root@LAPTOP-V6PDFH7U:~# echo $PATH</span><br></pre></td></tr></table></figure></li>
+<li><p>shell 就是从这路径中搜索程序的。每次当键入程序时，它就会在路径列表中查找</p>
+</li>
+<li><p>在shell中导航，当前工作目录 <code>pwd</code> 可以做到。值得注意的是，在windows上，每个盘都有一个根目录（例如C:\)而在Liunx和macos中他们全部都挂载在一个命名空间之下。（如果某个路径以<code>/</code>开头，则是 <em>绝对路径</em>  ，而其他的都是 <em>相对路径</em>）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:~# pwd</span><br><span class="line">/root</span><br></pre></td></tr></table></figure></li>
+<li><p>同样的，可以通过 <code>cd</code> 切换目录，并且 <code>.</code> 代表了当前目录， <code>..</code> 代表了父目录,  <code>~</code>  代表了主目录， <code>-</code>  代表了会切换到上次的目录，<code>ls</code>  表示列出当前目录下的所有文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:~# pwd</span><br><span class="line">/root</span><br><span class="line">root@LAPTOP-V6PDFH7U:~# cd /home</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# pwd</span><br><span class="line">/home</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# cd ..</span><br><span class="line">root@LAPTOP-V6PDFH7U:/# pwd</span><br><span class="line">/</span><br><span class="line">root@LAPTOP-V6PDFH7U:/# cd ./home</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# cd ./home</span><br><span class="line">-bash: cd: ./home: No such file or directory</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# pwd</span><br><span class="line">/home</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# ls</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# cd ..</span><br><span class="line">root@LAPTOP-V6PDFH7U:/# ls</span><br><span class="line">bin   dev  home  lib    lib64   lost+found  mnt  proc  run   snap  sys  usr</span><br><span class="line">boot  etc  init  lib32  libx32  media       opt  root  sbin  srv   tmp  var</span><br><span class="line">root@LAPTOP-V6PDFH7U:/# ls ..</span><br><span class="line">bin   dev  home  lib    lib64   lost+found  mnt  proc  run   snap  sys  usr</span><br><span class="line">boot  etc  init  lib32  libx32  media       opt  root  sbin  srv   tmp  var</span><br><span class="line">root@LAPTOP-V6PDFH7U:/# cd·`</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash">&gt; <span class="built_in">cd</span> `</span></span><br><span class="line">root@LAPTOP-V6PDFH7U:/# cd -</span><br><span class="line">/home</span><br><span class="line">root@LAPTOP-V6PDFH7U:/home# cd -</span><br><span class="line">/</span><br><span class="line">root@LAPTOP-V6PDFH7U:/#</span><br></pre></td></tr></table></figure></li>
+<li><p>值得注意的是，<code>ls -l</code>会给出长列表的文件，就像这样</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:/# ls -l</span><br><span class="line">total 696</span><br><span class="line">lrwxrwxrwx   1 root root      7 May  2 05:34 bin -&gt; usr/bin</span><br><span class="line">drwxr-xr-x   2 root root   4096 Apr 18  2022 boot</span><br><span class="line">drwxr-xr-x   8 root root   2740 Jul 21 18:05 dev</span><br><span class="line">drwxr-xr-x  73 root root   4096 Jul 21 18:05 etc</span><br><span class="line">drwxr-xr-x   2 root root   4096 Apr 18  2022 home</span><br><span class="line">-rwxr-xr-x   3 root root 644432 Dec 15  2022 init</span><br><span class="line">lrwxrwxrwx   1 root root      7 May  2 05:34 lib -&gt; usr/lib</span><br><span class="line">lrwxrwxrwx   1 root root      9 May  2 05:34 lib32 -&gt; usr/lib32</span><br><span class="line">lrwxrwxrwx   1 root root      9 May  2 05:34 lib64 -&gt; usr/lib64</span><br><span class="line">lrwxrwxrwx   1 root root     10 May  2 05:34 libx32 -&gt; usr/libx32</span><br><span class="line">drwx------   2 root root  16384 Apr 11  2019 lost+found</span><br><span class="line">drwxr-xr-x   2 root root   4096 May  2 05:34 media</span><br><span class="line">drwxr-xr-x   6 root root   4096 Jul 19 18:15 mnt</span><br><span class="line">drwxr-xr-x   2 root root   4096 May  2 05:34 opt</span><br><span class="line">dr-xr-xr-x 228 root root      0 Jul 21 18:05 proc</span><br><span class="line">drwx------   2 root root   4096 Jul 19 19:11 root</span><br><span class="line">drwxr-xr-x   9 root root    200 Jul 21 18:05 run</span><br><span class="line">lrwxrwxrwx   1 root root      8 May  2 05:34 sbin -&gt; usr/sbin</span><br><span class="line">drwxr-xr-x   8 root root   4096 May  2 05:36 snap</span><br><span class="line">drwxr-xr-x   2 root root   4096 May  2 05:34 srv</span><br><span class="line">dr-xr-xr-x  11 root root      0 Jul 21 18:05 sys</span><br><span class="line">drwxrwxrwt   2 root root   4096 May  2 05:35 tmp</span><br><span class="line">drwxr-xr-x  14 root root   4096 May  2 05:34 usr</span><br><span class="line">drwxr-xr-x  13 root root   4096 May  2 05:35 var</span><br></pre></td></tr></table></figure></li>
+<li><p>可以看到上文中的首列，代表着你所拥有的权限，第一个字母<code>d</code>表示这是否是个目录，而后面9位以3位为1组，表示该文件设置的权限，第一组是文件的所有者设置的权限，第二组是拥有该文件的组设置的权限，第三组是其他人的权限列表。</p>
+</li>
+<li><p>其他的命令 <code>mv</code> 既可以重命名文件，又可以移动文件。<code>cp</code> 可以拷贝文件，<code>rm</code>可以删除文件(不能删除目录）。<code>mkdir</code>可以新建一个目录。<code>man</code>相当于帮助文档</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mv foold.md food.md</span><br><span class="line">cp food.md des.md</span><br><span class="line">rm ../food.md</span><br><span class="line">mkdir My\ Photos</span><br><span class="line">man ls</span><br></pre></td></tr></table></figure></li>
+<li><p>Ctrl+L可以清除终端的内容回到顶部。</p>
+</li>
+</ol>
+<h2 id="shell的流的概念"><a href="#shell的流的概念" class="headerlink" title="shell的流的概念"></a>shell的<strong>流</strong>的概念</h2><p>程序有两种 <strong>流</strong> 输入流和输出流，默认都是终端的。</p>
+<p><code>&lt; file </code>表示输入流重定向到<code>file</code>这个文件。<br><code>&lt; file </code>表示输出流重定向到<code>file</code>这个文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo &#x27;#!/bin/sh&#x27; &gt;semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo curl --head --silent https://missing.csail.mit.edu &gt;&gt; semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cat semester</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">curl --head --silent https://missing.csail.mit.edu</span><br></pre></td></tr></table></figure>
+<p><code>cat</code>是一个打印程序，它可以打印出来文件的内容</p>
+<p><code>|</code>称为管道符，可以读取左边程序的输出作为右边程序的读入。</p>
+<p>下面是一个使用管道符的例子</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:/# ls -l | tail -n1</span><br><span class="line">drwxr-xr-x  13 root root   4096 May  2 05:35 var</span><br></pre></td></tr></table></figure>
+<p>可以看到，他会输出列表的最后一行。</p>
+<h2 id="root用户"><a href="#root用户" class="headerlink" title="root用户"></a>root用户</h2><p>在Liunx和macOS系统中，root用户类似于Windows中的管理员。它的用户ID是0。 通常情况下，不应该作为root用户进行操作，但是偶尔会需要root的权限。那么此时就需要用到一个命令<code>sudo</code>它可以以root用户来执行一些事情。</p>
+<p>值得一提的是<code>#</code>代表以root用户执行，<code>$</code>代表以非root用户执行</p>
+<p>&#x2F;sys中的文件并不是计算机上的文件，而是一些<strong>内核参数</strong> ，这些内核参数暴露成文件的样子。可以通过文件来访问这些参数。</p>
+<p>练习以及答案均在<a target="_blank" rel="noopener" href="https://missing-semester-cn.github.io/missing-notes-and-solutions//2020/solutions/course-shell-solution/">课程网站上</a></p>
+<p>于2023&#x2F;7&#x2F;21晚</p>
+<p>练习代码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">root@LAPTOP-V6PDFH7U:/# cd /tmp</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# mkdir missing</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# ls</span><br><span class="line">missing</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# man touch</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# man touch</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# touch semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# cd /missing</span><br><span class="line">-bash: cd: /missing: No such file or directory</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# cd missing</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo &#x27;#!/bin/sh&#x27; &gt; semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo curl --head --silent https://missing.csail.mit.edu &gt; semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cat semester</span><br><span class="line">curl --head --silent https://missing.csail.mit.edu</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo &#x27;#!/bin/sh&#x27; &gt; semester</span><br><span class="line">-bash: echo#!/bin/sh: No such file or directory</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ls</span><br><span class="line">semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo &#x27;#!/bin/sh&#x27; &gt;semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# echo curl --head --silent https://missing.csail.mit.edu &gt;&gt; semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cat semester</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">curl --head --silent https://missing.csail.mit.edu</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ./semester</span><br><span class="line">-bash: ./semester: Permission denied</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ls</span><br><span class="line">semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cd semester</span><br><span class="line">-bash: cd: semester: Not a directory</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cd ..</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp# cd -</span><br><span class="line">/tmp/missing</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ls -l</span><br><span class="line">total 4</span><br><span class="line">-rw-r--r-- 1 root root 61 Jul 21 19:38 semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# man chmod</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# chmod 777 semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ls -l</span><br><span class="line">total 4</span><br><span class="line">-rwxrwxrwx 1 root root 61 Jul 21 19:38 semester</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ./semester</span><br><span class="line">HTTP/2 200</span><br><span class="line">server: GitHub.com</span><br><span class="line">content-type: text/html; charset=utf-8</span><br><span class="line">last-modified: Sat, 15 Jul 2023 18:30:36 GMT</span><br><span class="line">access-control-allow-origin: *</span><br><span class="line">etag: &quot;64b2e5cc-1f86&quot;</span><br><span class="line">expires: Fri, 21 Jul 2023 10:47:22 GMT</span><br><span class="line">cache-control: max-age=600</span><br><span class="line">x-proxy-cache: MISS</span><br><span class="line">x-github-request-id: F93E:466C:52941A:5823EB:64BA5FE1</span><br><span class="line">accept-ranges: bytes</span><br><span class="line">date: Fri, 21 Jul 2023 12:21:50 GMT</span><br><span class="line">via: 1.1 varnish</span><br><span class="line">age: 0</span><br><span class="line">x-served-by: cache-hkg17923-HKG</span><br><span class="line">x-cache: HIT</span><br><span class="line">x-cache-hits: 1</span><br><span class="line">x-timer: S1689942110.379315,VS0,VE255</span><br><span class="line">vary: Accept-Encoding</span><br><span class="line">x-fastly-request-id: 325c74f156c18c599ac77719e2d821c0d3970465</span><br><span class="line">content-length: 8070</span><br><span class="line"></span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# ./semester | grep last-modified &gt; ~/last-modified.txt</span><br><span class="line"></span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing#</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cat ~/last-modified.txt</span><br><span class="line">last-modified: Sat, 15 Jul 2023 18:30:36 GMT</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing# cat /sys/class/power_supply/BAT1/capacity</span><br><span class="line">96</span><br><span class="line">root@LAPTOP-V6PDFH7U:/tmp/missing#</span><br></pre></td></tr></table></figure>
+
+<p>备注1. 做练习时遇到了一个文件已经写好但是无法执行的情况，原因是没有相应的权限，此时添加权限的命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 semester</span><br></pre></td></tr></table></figure>
+<p><code>777</code> 在这里代表着了权限设置为777表示：</p>
+<p>文件所有者（第一个7）有读（4） + 写（2） + 执行（1）的权限（4 + 2 + 1 &#x3D; 7）<br>文件所有者所在组（第二个7）有读（4） + 写（2） + 执行（1）的权限（4 + 2 + 1 &#x3D; 7）<br>其他用户（第三个7）有读（4） + 写（2） + 执行（1）的权限（4 + 2 + 1 &#x3D; 7）</p>
+<p>而每个权限位代表着</p>
+<ul>
+<li>0：没有权限</li>
+<li>1：执行权限</li>
+<li>2：写权限</li>
+<li>4：读权限</li>
+</ul>
+<p>将它们组合在一起可以使用相应的数字表示。为了方便说明，可以使用下面的对应关系：</p>
+<ul>
+<li>4：读权限（100）</li>
+<li>2：写权限（010）</li>
+<li>1：执行权限（001）</li>
+</ul>
+<p>所以实际上<code>777</code>会使得该文件全面开放</p>
+<p>备注2.迁移obsidian</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/25/%E6%B5%8B%E8%AF%95%E5%8D%9A%E5%AE%A2/" rel="prev" title="测试博客">
+      <i class="fa fa-chevron-left"></i> 测试博客
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell"><span class="nav-number">1.</span> <span class="nav-text">Shell</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#shell%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">shell是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shell%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AE%80%E4%BB%8B"><span class="nav-number">1.2.</span> <span class="nav-text">shell的一些简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shell%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">shell的基本操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shell%E7%9A%84%E6%B5%81%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.4.</span> <span class="nav-text">shell的流的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#root%E7%94%A8%E6%88%B7"><span class="nav-number">1.5.</span> <span class="nav-text">root用户</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sparrow"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sparrow</p>
+  <div class="site-description" itemprop="description">不知所措才是人生</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huamuyichun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huamuyichun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2486013181@qq.com" title="E-Mail → mailto:2486013181@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/hejiawenze" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;hejiawenze" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>Google</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2023-04 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sparrow</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共2.5k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
