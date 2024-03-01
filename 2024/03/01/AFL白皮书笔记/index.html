@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"huamuyichun.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="读源码之前所作的准备工作–读白皮书">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL白皮书笔记">
+<meta property="og:url" content="http://huamuyichun.github.io/2024/03/01/AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="hmyc_blog">
+<meta property="og:description" content="读源码之前所作的准备工作–读白皮书">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-03-01T14:41:39.000Z">
+<meta property="article:modified_time" content="2024-03-01T14:45:39.431Z">
+<meta property="article:author" content="Sparrow">
+<meta property="article:tag" content="模糊测试">
+<meta property="article:tag" content="AFL原理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://huamuyichun.github.io/2024/03/01/AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AFL白皮书笔记 | hmyc_blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">hmyc_blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://huamuyichun.github.io/2024/03/01/AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sparrow">
+      <meta itemprop="description" content="不知所措才是人生">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hmyc_blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AFL白皮书笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-01 22:41:39 / 修改时间：22:45:39" itemprop="dateCreated datePublished" datetime="2024-03-01T22:41:39+08:00">2024-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/" itemprop="url" rel="index"><span itemprop="name">cs</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">模糊测试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/AFL/" itemprop="url" rel="index"><span itemprop="name">AFL</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>读源码之前所作的准备工作–读白皮书</p>
+<span id="more"></span>
+
+<p>学习AFL工具的前提是阅读白皮书。</p>
+<h2 id="前言（名词解释）"><a href="#前言（名词解释）" class="headerlink" title="前言（名词解释）"></a>前言（名词解释）</h2><h3 id="插桩"><a href="#插桩" class="headerlink" title="插桩"></a>插桩</h3><p>它是在保证被测程序原有逻辑完整性的基础上在程序中插入一些[探针]（又称为“探测仪”，本质上就是进行信息采集的代码段，可以是[赋值语句]或采集覆盖信息的[函数调用]），通过[探针]的执行并抛出程序运行的[特征]数据（方法本身、方法参数值、返回值等），通过对这些数据的分析，可以获得程序的控制流和数据流信息，进而得到逻辑覆盖等动态信息，从而实现测试目的方法。如果我们想要了解一个程序在某次运行中可执行语句被覆盖的情况，或是每个语句的实际执行次数，最好的办法就是利用插装技术。</p>
+<h3 id="代码覆盖"><a href="#代码覆盖" class="headerlink" title="代码覆盖"></a>代码覆盖</h3><p>是软件测试中的一种度量，描述程序中源代码被测试的比例和程度，所得的比率为代码覆盖率。</p>
+<h2 id="AFL的工作流程"><a href="#AFL的工作流程" class="headerlink" title="AFL的工作流程"></a>AFL的工作流程</h2><ol>
+<li>从源码编译的时候开始插桩，以记录代码覆盖率</li>
+<li>选择一些输入文件，作为初始测试集加入队列中</li>
+<li>将队列中的文件按照一定策略突变</li>
+<li>如果已经变异的文件更新了覆盖范围，则将其保留添加到队列中</li>
+<li>上述循环，期间触发了crash的会保留下来。</li>
+</ol>
+<h2 id="1-覆盖率计算"><a href="#1-覆盖率计算" class="headerlink" title="1. 覆盖率计算"></a>1. 覆盖率计算</h2><p>在编译程序中注入的插桩(instrumentation)能够捕获分支(边缘)覆盖率，并且还能检测到粗略的分支执行命中次数(branch-taken hit counts)。在分支点注入的代码大致如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cur_location = &lt;COMPILE_TIME_RANDOM&gt;;</span><br><span class="line">shared_mem[cur_location ^ prev_location]++; </span><br><span class="line">prev_location = cur_location &gt;&gt; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>这段代码的作用就是通过在分支点插入代码，利用[[Q&amp;A#什么叫做”这是为了简化连接复杂对象的过程和保持XOR输出分布是均匀的。”|异或操作混淆位置信息]]，将每个分支的执行情况记录在共享内存里，以便后续分析程序的覆盖率和执行路径，这是AFL利用动态二进制插桩技术实现模糊测试的核心机制之一。<br>在这里<code>cur_location</code>与<code>prev_location</code>的存在是共同决定插桩索引。<br>其中<code>cur_location</code>是通过编译产生的随机数，<code>prev_location</code>是为下一次循环准备信息。而右移操作是为了让tuple具有定向性。<br>而<code>shared_mem</code>是一个64KB的共享内存数组，由调用者传递给被插桩的二进制程序，这个数组的每一位可以理解为对于特定的分支源和目标的一次命中，用于记录分支的执行情况。</p>
+<h2 id="2-发现新路径"><a href="#2-发现新路径" class="headerlink" title="2. 发现新路径"></a>2. 发现新路径</h2><p>AFL的fuzzer维护了一个全局的map来存储之前执行时看到的tuple。维护的信息可以被用来对不同的trace进行快速对比，从而可以计算出是否新执行了一个dword指令&#x2F;一个qword-wide指令&#x2F;一个简单的循环。<br>afl通过输入文件的突变产生新的路径（新tuples），当一个变异的输入产生了一个包含新tuples的执行路径时，对应的输入文件就会被保存，会入队。而对于没有新路径输入的文件就会被抛弃掉。</p>
+<h2 id="3-输入队列的进化"><a href="#3-输入队列的进化" class="headerlink" title="3. 输入队列的进化"></a>3. 输入队列的进化</h2><p>变异测试用例(Mutated test cases)是能够产生新的语句转移(即新的tuple)的测试用例。这种变异测试用例会被加入到输入队列(input queue)中，当做下一次fuzz的起点。它们作为已有测试用例的补充，但并不替换掉已有测试用例。</p>
+<h2 id="4-语料筛选与修剪"><a href="#4-语料筛选与修剪" class="headerlink" title="4. 语料筛选与修剪"></a>4. 语料筛选与修剪</h2><p>保证语料库尽可能多的覆盖目标代码，也要避免冗余。<br>AFL需要一些初始输入数据作为fuzzing的起点，afl可以通过启发式算法自动确定文件格式结构。</p>
+<h3 id="选择语料库的原则"><a href="#选择语料库的原则" class="headerlink" title="选择语料库的原则"></a>选择语料库的原则</h3><ol>
+<li>有效输入</li>
+<li>尽量小的体积</li>
+</ol>
+<h3 id="寻找语料库"><a href="#寻找语料库" class="headerlink" title="寻找语料库"></a>寻找语料库</h3><h3 id="输入文件修剪，语料库蒸馏"><a href="#输入文件修剪，语料库蒸馏" class="headerlink" title="输入文件修剪，语料库蒸馏"></a>输入文件修剪，<strong>语料库蒸馏</strong></h3><p>核心思想是收集大量有效的输入，然后，对于每个输入，测量基本块的代码覆盖，如果输入仅触发先前输入已经访问过的基本块，则将其从集合中移除。<br>工作流处理（不是很理解）</p>
+<h2 id="5-模糊测试策略（变异策略）"><a href="#5-模糊测试策略（变异策略）" class="headerlink" title="5. 模糊测试策略（变异策略）"></a>5. 模糊测试策略（变异策略）</h2><p>值得注意的是，尤其是在早期，afl-fuzz所做的大部分工作实际上都是高度确定性(highly deterministic)的，并且仅在后期才进行到随机堆叠的修改(random stacked modifications)和测试用例的拼接(test case splicing)<br>确定性策略包。</p>
+<ul>
+<li>使用变化的长度和步距(lengths and stepovers)来连续(sequential)进行位反转。</li>
+<li>对小的整型数(small integers)来连续进行加法和减法。</li>
+<li>对已知的interesting integers(例如 0,1，INT_MAX等)连续地插入。</li>
+</ul>
+<p>使用这些确定步骤的目的在于，生成紧凑的(compact)测试用例，以及在产生non-crashing的输入和产生crashing的输入之间，有很小的差异(small diffs)。<br>非确定性(non-deterministic)策略的步骤包括：stacked bit flips、插入(insertions)、删除(deletions)、算数(arithmetics)和不同测试用例之间的接片(splicing)。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" rel="tag"># 模糊测试</a>
+              <a href="/tags/AFL%E5%8E%9F%E7%90%86/" rel="tag"># AFL原理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/26/%E4%BA%BA%E7%B1%BB%E7%9A%84%E8%B5%9E%E6%AD%8C%E5%B0%B1%E6%98%AF%E5%AF%B9%E6%89%80%E6%9C%89%E7%BE%8E%E5%A5%BD%E5%93%81%E8%B4%A8%E7%9A%84%E8%B5%9E%E6%AD%8C/" rel="prev" title="人类的赞歌就是对所有美好品质的赞歌">
+      <i class="fa fa-chevron-left"></i> 人类的赞歌就是对所有美好品质的赞歌
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/01/AFL%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84Q-A/" rel="next" title="AFL学习中的Q&A">
+      AFL学习中的Q&A <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80%EF%BC%88%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">前言（名词解释）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E6%A1%A9"><span class="nav-number">1.1.</span> <span class="nav-text">插桩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96"><span class="nav-number">1.2.</span> <span class="nav-text">代码覆盖</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AFL%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">AFL的工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%A6%86%E7%9B%96%E7%8E%87%E8%AE%A1%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text">1. 覆盖率计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8F%91%E7%8E%B0%E6%96%B0%E8%B7%AF%E5%BE%84"><span class="nav-number">4.</span> <span class="nav-text">2. 发现新路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%BE%93%E5%85%A5%E9%98%9F%E5%88%97%E7%9A%84%E8%BF%9B%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">3. 输入队列的进化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%AF%AD%E6%96%99%E7%AD%9B%E9%80%89%E4%B8%8E%E4%BF%AE%E5%89%AA"><span class="nav-number">6.</span> <span class="nav-text">4. 语料筛选与修剪</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E8%AF%AD%E6%96%99%E5%BA%93%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">6.1.</span> <span class="nav-text">选择语料库的原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%BB%E6%89%BE%E8%AF%AD%E6%96%99%E5%BA%93"><span class="nav-number">6.2.</span> <span class="nav-text">寻找语料库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E4%BF%AE%E5%89%AA%EF%BC%8C%E8%AF%AD%E6%96%99%E5%BA%93%E8%92%B8%E9%A6%8F"><span class="nav-number">6.3.</span> <span class="nav-text">输入文件修剪，语料库蒸馏</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E7%AD%96%E7%95%A5%EF%BC%88%E5%8F%98%E5%BC%82%E7%AD%96%E7%95%A5%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">5. 模糊测试策略（变异策略）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sparrow"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sparrow</p>
+  <div class="site-description" itemprop="description">不知所措才是人生</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huamuyichun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huamuyichun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2486013181@qq.com" title="E-Mail → mailto:2486013181@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/hejiawenze" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;hejiawenze" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>Google</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2023-04 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sparrow</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共17.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

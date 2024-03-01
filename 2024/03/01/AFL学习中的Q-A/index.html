@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"huamuyichun.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在笔者学习过程中遇到了很多问题，这是这些问题的记录(持续更新)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL学习中的Q&amp;A">
+<meta property="og:url" content="http://huamuyichun.github.io/2024/03/01/AFL%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84Q-A/index.html">
+<meta property="og:site_name" content="hmyc_blog">
+<meta property="og:description" content="在笔者学习过程中遇到了很多问题，这是这些问题的记录(持续更新)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-03-01T14:46:27.000Z">
+<meta property="article:modified_time" content="2024-03-01T14:48:37.713Z">
+<meta property="article:author" content="Sparrow">
+<meta property="article:tag" content="AFL">
+<meta property="article:tag" content="模糊测试">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://huamuyichun.github.io/2024/03/01/AFL%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84Q-A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AFL学习中的Q&A | hmyc_blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">hmyc_blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://huamuyichun.github.io/2024/03/01/AFL%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84Q-A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sparrow">
+      <meta itemprop="description" content="不知所措才是人生">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hmyc_blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AFL学习中的Q&A
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-01 22:46:27 / 修改时间：22:48:37" itemprop="dateCreated datePublished" datetime="2024-03-01T22:46:27+08:00">2024-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/" itemprop="url" rel="index"><span itemprop="name">cs</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">模糊测试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/AFL/" itemprop="url" rel="index"><span itemprop="name">AFL</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在笔者学习过程中遇到了很多问题，这是这些问题的记录(持续更新)</p>
+<span id="more"></span>
+
+<h3 id="什么叫做”这是为了简化连接复杂对象的过程和保持XOR输出分布是均匀的。”"><a href="#什么叫做”这是为了简化连接复杂对象的过程和保持XOR输出分布是均匀的。”" class="headerlink" title="什么叫做”这是为了简化连接复杂对象的过程和保持XOR输出分布是均匀的。”"></a>什么叫做”这是为了简化连接复杂对象的过程和保持XOR输出分布是均匀的。”</h3><p>答：</p>
+<ol>
+<li>简化链接复杂对象：在实际的程序中，可能会存在复杂的条件分支，嵌套的控制流。为了避免在插桩时引入过于复杂的逻辑，AFL选择了一个编译时随机生成的值<code>cur_location</code>来作为插桩时的位置信息，这个值是编译时确定的，而不是运行时动态生成的，以简化链接时的复杂性。</li>
+<li>保持xor输出分布是均匀的，异或操作可以被用于混淆位置信息并生成索引。在这里首先插桩索引越均匀测试的就越全面，覆盖率更高。然后异或具有均匀分布的特性，可以使得<code>cur_location</code>与<code>prev_location</code>异或产生的值更加均匀。<br>从这里可以看出特性：<strong>afl插桩是有一定随机性的，并不是根据源码的特定分支点进行插桩</strong>。</li>
+</ol>
+<h3 id="为什么要找afl-as的位置以及找到它之后的用途"><a href="#为什么要找afl-as的位置以及找到它之后的用途" class="headerlink" title="为什么要找afl-as的位置以及找到它之后的用途"></a>为什么要找afl-as的位置以及找到它之后的用途</h3><p>答：</p>
+<ul>
+<li><strong>插桩二进制文件：</strong> AFL 使用动态二进制插桩技术，即在二进制文件中插入额外的代码，以便在运行时收集关于程序执行路径的信息。<code>afl-as</code> 负责将原始二进制文件插入这些插桩代码。</li>
+<li><strong>寻找 <code>afl-as</code> 的位置：</strong> AFL 通过寻找 <code>afl-as</code> 可执行文件的位置来确定在哪里可以找到汇编器，以便后续的插桩操作。这是 <code>find_as</code> 函数的作用，尝试在不同的路径下找到 <code>afl-as</code> 可执行文件。</li>
+<li><strong>确定插桩器的路径：</strong> 一旦找到了 <code>afl-as</code> 的位置，程序可以将这个路径存储起来，以便在后续的操作中使用。这通常是通过将 <code>as_path</code> 变量设置为 <code>afl-as</code> 可执行文件所在的目录。</li>
+<li><strong>后续插桩操作：</strong> 找到 <code>afl-as</code> 的位置后，程序就可以在后续的操作中使用这个路径，例如在运行时对目标程序进行插桩，收集执行路径信息，用于模糊测试等安全分析工作<br>查找位置就是为了方便后续工作，定位汇编器。</li>
+</ul>
+<h3 id="什么叫做环境变量，它是干什么用的"><a href="#什么叫做环境变量，它是干什么用的" class="headerlink" title="什么叫做环境变量，它是干什么用的"></a>什么叫做环境变量，它是干什么用的</h3><p>答：<br>当一个程序在操作系统中运行时，它可以访问一组全局的，在操作系统环境中定义的参数，这些参数就是环境变量。环境变量是键值对的形式，其中键是变量的名称，值是变量的内容，这些变量存储了系统的配置信息，用户的偏好设置，以及其他信息。</p>
+<h3 id="argv是什么"><a href="#argv是什么" class="headerlink" title="argv是什么"></a>argv是什么</h3><p>答：<code>argv</code> 是一个在 C 或 C++ 程序中使用的命令行参数的数组。它是一个由字符串组成的数组，其中每个字符串表示一个命令行参数。通常，<code>argv</code> 的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;     <span class="comment">// ...</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>argc</code>（argument count）是一个整数，表示传递给程序的命令行参数的数量，包括程序本身。</li>
+<li><code>argv</code>（argument vector）是一个指向字符串数组的指针，其中每个字符串是一个命令行参数。</li>
+</ul>
+<p>例如，如果你在终端运行一个程序并传递了一些参数，比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./my_program arg1 arg2 arg3</span><br></pre></td></tr></table></figure>
+<p>那么在程序中，<code>argc</code> 将为 4（包括程序名本身），而 <code>argv</code> 将包含以下内容：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">argv[<span class="number">0</span>] -&gt; <span class="string">&quot;./my_program&quot;</span></span><br><span class="line">argv[<span class="number">1</span>] -&gt; <span class="string">&quot;arg1&quot;</span></span><br><span class="line">argv[<span class="number">2</span>] -&gt; <span class="string">&quot;arg2&quot;</span></span><br><span class="line">argv[<span class="number">3</span>] -&gt; <span class="string">&quot;arg3&quot;</span></span><br><span class="line">argv[<span class="number">4</span>] -&gt; <span class="literal">NULL</span></span><br><span class="line"><span class="comment">// 最后一个元素通常是空指针，用于表示数组的结束</span></span><br></pre></td></tr></table></figure>
+<p>程序可以通过遍历 <code>argv</code> 数组来访问传递的命令行参数。例如，<code>argv[1]</code> 包含第一个参数的字符串，即 “arg1”。</p>
+<h3 id="什么叫做文件的句柄"><a href="#什么叫做文件的句柄" class="headerlink" title="什么叫做文件的句柄"></a>什么叫做文件的句柄</h3><p>答：<br>文件句柄是操作系统用于标识和管理打开文件的一种抽象概念。在计算机系统中，文件句柄是一个指向文件或其他输入&#x2F;输出资源的标识符或引用。</p>
+<p>通常，当应用程序需要读取或写入文件时，它首先请求操作系统打开文件。操作系统为每个打开的文件分配一个唯一的文件句柄，应用程序可以使用这个句柄来标识和引用相应的文件。文件句柄是应用程序和操作系统之间的一种通信机制，允许应用程序对文件进行读取、写入和其他操作，而不必了解文件在物理存储设备上的详细信息。</p>
+<p>文件句柄的具体实现方式和表示方法取决于操作系统。在 Unix&#x2F;Linux 系统中，文件句柄通常是一个非负整数；在 Windows 系统中，文件句柄通常是一个指向内核对象的指针或索引。</p>
+<p>总的来说，文件句柄是操作系统提供的一种机制，用于管理应用程序与文件之间的交互，使得应用程序可以通过句柄来引用和操作文件，而无需关心底层的文件细节。</p>
+<h3 id="什么叫做二进制可执行文件的段，分别是什么"><a href="#什么叫做二进制可执行文件的段，分别是什么" class="headerlink" title="什么叫做二进制可执行文件的段，分别是什么"></a>什么叫做二进制可执行文件的段，分别是什么</h3><p>答：<br>在可执行文件的上下文中，”段”（Segment）是指可执行文件中的一个部分，用于存储特定类型的信息。每个段都有自己的属性和用途。主要的段通常包括：</p>
+<ol>
+<li><p><strong>代码段 (.text)</strong>: 存储可执行代码的二进制指令，即程序的实际执行代码。</p>
+</li>
+<li><p><strong>数据段 (.data)</strong>: 存储已经初始化的全局和静态变量。这包括程序中声明并赋予初值的变量。</p>
+</li>
+<li><p><strong>BSS 段 (.bss)</strong>: 存储未初始化的全局和静态变量。这些变量在程序启动时被自动初始化为零。</p>
+</li>
+<li><p><strong>只读数据段 (.rodata)</strong>: 存储只读的数据，通常包括字符串常量等。</p>
+</li>
+<li><p><strong>重定位段 (.rel.text, .rel.data 等)</strong>: 存储链接器在连接时需要进行的重定位信息。</p>
+</li>
+</ol>
+<p>每个段都有相应的段头表（Section Header Table）来描述它们的属性和位置。段头表存储了关于每个段的信息，包括起始地址、大小、权限等。</p>
+<p>这些段的组织和使用方式在不同的可执行文件格式（如 ELF、PE）和体系结构（如 x86、ARM）之间可能有所不同。但总体来说，这些段的组合形成了可执行文件的结构，使操作系统能够正确加载和执行程序。</p>
+<h3 id="什么是ASAN或MSAN"><a href="#什么是ASAN或MSAN" class="headerlink" title="什么是ASAN或MSAN"></a>什么是ASAN或MSAN</h3><p>答：<br>ASAN 和 MSAN 是两种内存检测工具：</p>
+<ol>
+<li><p><strong>ASAN (AddressSanitizer):</strong> ASAN 是一种用于检测内存错误的工具，包括缓冲区溢出、使用已释放内存、内存泄漏等。它通过在程序运行时插入额外的代码来检测这些错误。ASAN 能够捕获并报告错误，帮助开发者在早期发现和修复潜在的内存问题。</p>
+</li>
+<li><p><strong>MSAN (MemorySanitizer):</strong> MSAN 是一种检测未初始化内存读取错误的工具。类似于 ASAN，MSAN 通过在程序运行时插入额外的代码来检测未初始化的内存访问。MSAN 有助于发现潜在的 bug，例如读取未初始化的变量的值，这些错误可能在某些情况下不容易被静态代码分析工具发现。</p>
+</li>
+</ol>
+<p>使用这些工具可能会导致以下情况：</p>
+<ul>
+<li><p><strong>性能开销：</strong> 由于这些工具在运行时插入了额外的代码，因此可能会导致程序运行速度下降。这就是上述代码中对 <code>inst_ratio</code> 进行降低的原因，以减小对性能的影响。</p>
+</li>
+<li><p><strong>增加可靠性：</strong> 这些工具有助于发现和修复潜在的内存错误，提高程序的稳定性和可靠性。</p>
+</li>
+<li><p><strong>更高的安全性：</strong> 通过检测内存错误，可以提高程序的安全性，防止潜在的漏洞被利用。</p>
+</li>
+</ul>
+<p>总体而言，使用 ASAN 和 MSAN 是一种权衡，可以提高代码的质量和安全性，但可能会以性能为代价。在开发和测试阶段使用这些工具，而在生产环境中关闭它们，是一种常见的做法。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AFL/" rel="tag"># AFL</a>
+              <a href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" rel="tag"># 模糊测试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/01/AFL%E7%99%BD%E7%9A%AE%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="prev" title="AFL白皮书笔记">
+      <i class="fa fa-chevron-left"></i> AFL白皮书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/01/AFL%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="next" title="AFL源码阅读">
+      AFL源码阅读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E5%8F%AB%E5%81%9A%E2%80%9D%E8%BF%99%E6%98%AF%E4%B8%BA%E4%BA%86%E7%AE%80%E5%8C%96%E8%BF%9E%E6%8E%A5%E5%A4%8D%E6%9D%82%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B%E5%92%8C%E4%BF%9D%E6%8C%81XOR%E8%BE%93%E5%87%BA%E5%88%86%E5%B8%83%E6%98%AF%E5%9D%87%E5%8C%80%E7%9A%84%E3%80%82%E2%80%9D"><span class="nav-number">1.</span> <span class="nav-text">什么叫做”这是为了简化连接复杂对象的过程和保持XOR输出分布是均匀的。”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%89%BEafl-as%E7%9A%84%E4%BD%8D%E7%BD%AE%E4%BB%A5%E5%8F%8A%E6%89%BE%E5%88%B0%E5%AE%83%E4%B9%8B%E5%90%8E%E7%9A%84%E7%94%A8%E9%80%94"><span class="nav-number">2.</span> <span class="nav-text">为什么要找afl-as的位置以及找到它之后的用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E5%8F%AB%E5%81%9A%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%8C%E5%AE%83%E6%98%AF%E5%B9%B2%E4%BB%80%E4%B9%88%E7%94%A8%E7%9A%84"><span class="nav-number">3.</span> <span class="nav-text">什么叫做环境变量，它是干什么用的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#argv%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">4.</span> <span class="nav-text">argv是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E5%8F%AB%E5%81%9A%E6%96%87%E4%BB%B6%E7%9A%84%E5%8F%A5%E6%9F%84"><span class="nav-number">5.</span> <span class="nav-text">什么叫做文件的句柄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E5%8F%AB%E5%81%9A%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E6%AE%B5%EF%BC%8C%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">6.</span> <span class="nav-text">什么叫做二进制可执行文件的段，分别是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFASAN%E6%88%96MSAN"><span class="nav-number">7.</span> <span class="nav-text">什么是ASAN或MSAN</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sparrow"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sparrow</p>
+  <div class="site-description" itemprop="description">不知所措才是人生</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huamuyichun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huamuyichun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2486013181@qq.com" title="E-Mail → mailto:2486013181@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/hejiawenze" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;hejiawenze" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>Google</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2023-04 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sparrow</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共17.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
