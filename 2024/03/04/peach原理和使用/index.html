@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"huamuyichun.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在网上寻找peach的过程还是比较麻烦的，虽然说文档比较好找，但是有关源码的博客却是少之又少，在搜索上就费了一定功夫。最后也只能找到Peach2的py源码，在上官网的时候，发现Gitlab已经把peach tech收购了而且本身peach就不是开源的，不知道这是不是网上难以找到C#源码的原因。此次为首次接触peach，所以源码先聚焦于变异策略和生成器上，具体考察一下是如何实现这些功能的，对于数据模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="peach原理和使用">
+<meta property="og:url" content="http://huamuyichun.github.io/2024/03/04/peach%E5%8E%9F%E7%90%86%E5%92%8C%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="hmyc_blog">
+<meta property="og:description" content="在网上寻找peach的过程还是比较麻烦的，虽然说文档比较好找，但是有关源码的博客却是少之又少，在搜索上就费了一定功夫。最后也只能找到Peach2的py源码，在上官网的时候，发现Gitlab已经把peach tech收购了而且本身peach就不是开源的，不知道这是不是网上难以找到C#源码的原因。此次为首次接触peach，所以源码先聚焦于变异策略和生成器上，具体考察一下是如何实现这些功能的，对于数据模">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-03-04T14:03:16.000Z">
+<meta property="article:modified_time" content="2024-03-04T14:08:19.935Z">
+<meta property="article:author" content="Sparrow">
+<meta property="article:tag" content="模糊测试">
+<meta property="article:tag" content="peach">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://huamuyichun.github.io/2024/03/04/peach%E5%8E%9F%E7%90%86%E5%92%8C%E4%BD%BF%E7%94%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>peach原理和使用 | hmyc_blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">hmyc_blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://huamuyichun.github.io/2024/03/04/peach%E5%8E%9F%E7%90%86%E5%92%8C%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sparrow">
+      <meta itemprop="description" content="不知所措才是人生">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hmyc_blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          peach原理和使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-04 22:03:16 / 修改时间：22:08:19" itemprop="dateCreated datePublished" datetime="2024-03-04T22:03:16+08:00">2024-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/" itemprop="url" rel="index"><span itemprop="name">cs</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">模糊测试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/cs/%E6%B5%8B%E8%AF%95/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/peach/" itemprop="url" rel="index"><span itemprop="name">peach</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在网上寻找peach的过程还是比较麻烦的，虽然说文档比较好找，但是有关源码的博客却是少之又少，在搜索上就费了一定功夫。最后也只能找到Peach2的py源码，在上官网的时候，发现Gitlab已经把peach tech收购了而且本身peach就不是开源的，不知道这是不是网上难以找到C#源码的原因。<br>此次为首次接触peach，所以源码先聚焦于变异策略和生成器上，具体考察一下是如何实现这些功能的，对于数据模型，状态模型和代理这些模块，可能涉及的不算细致。还是慢慢来吧。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>参考资料：<br><a target="_blank" rel="noopener" href="https://github.com/TideSec/Peach_Fuzzing">Tide</a>(集成了很多资源)<br><a target="_blank" rel="noopener" href="https://github.com/MozillaSecurity/peach/tree/master/Peach">peach py源码</a><br><a target="_blank" rel="noopener" href="https://peachtech.gitlab.io/peach-fuzzer-community/">官方文档</a>(基本跟着这个来的)<br><a target="_blank" rel="noopener" href="https://www.secrss.com/articles/15051">一个工控实例</a></p>
+</blockquote>
+<h1 id="Peach-是什么"><a href="#Peach-是什么" class="headerlink" title="Peach 是什么"></a>Peach 是什么</h1><p>peach是一款智能模糊测试器，它有两种测试，分别是基于生成的测试和基于变异的测试，之前所学的AFL感觉更倾向于基于变异的测试，虽然它自称是两者均有的。<br>那么，同样的，文档是作为引入，学习peach，我将聚焦于这两种测试的实现。<br>Peach有个特点是需要自己编写一个pit(xml格式)的文件作为测试的指导(我是这么理解的)，所以pit文件的编写就很关键。另外呢，peach作为一种框架，它还可以测网络协议之类的，学习过程中，我看到了很多工控方面的硬件测试都用的peach完成。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>为了贯彻互联网精神，我就不跳过安装这一步了。<br>虽然文档上说了要下<code>.net4</code>和<code>windbg</code>但实际上，一般的windows都会带<code>.net4</code>，所以只需要下个<code>windbg</code>即可，执行命令以查看<code>.net</code>的版本<br><code>reg query &quot;HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full&quot; /v Version</code><br>然后<a target="_blank" rel="noopener" href="https://github.com/TideSec/Peach_Fuzzing/tree/master/peach">下载</a>(这里也有<code>windbg</code>)，有几种不同的包，其中<code>peach-master_python.zip</code>是py的源码，而<code>peach-3.1.124-win-x64-release.zip</code>这个则包含了二进制可执行文件。所以：</p>
+<ol>
+<li>如果要看源码，则下载前者</li>
+<li>如果直接使用，则下载后者，后者还会携带<code>samples</code>文件夹，下载好后执行<code>peach.exe samples\HelloWorld.xml</code>查看结果即可，如果是乱码则下载成功。</li>
+<li>值得注意的是，如果需要抓包，则用wireshark即可</li>
+</ol>
+<h1 id="使用流程"><a href="#使用流程" class="headerlink" title="使用流程"></a>使用流程</h1><ol>
+<li>创建模型</li>
+<li>选择&#x2F;配置Publisher</li>
+<li>配置代理&#x2F;监视器</li>
+<li>配置记录</li>
+</ol>
+<h1 id="Pit文件"><a href="#Pit文件" class="headerlink" title="Pit文件"></a>Pit文件</h1><p>peach把用于数据定义的文件叫做<code>peach pit file</code>。使用peach时，实际上就是定义这样的一个文件指示peach去做测试。<br>其中pit文件应该包括：</p>
+<ol>
+<li>General Configuration(通用配置）</li>
+<li>Data Modeling（数据模型）</li>
+<li>State Modeling（状态模型）</li>
+<li>Agents and Monitors（代理和监视）    </li>
+<li>Test Configuration（测试配置）<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml...版本，编码之类...&gt; </span><br><span class="line">&lt;Peach ...版本，作者介绍之类...&gt; </span><br><span class="line">&lt;Include ...包含的外部文件/&gt; </span><br><span class="line">&lt;DataModel &gt;原始数据结构定义&lt;/DataModel&gt; </span><br><span class="line">&lt;StateModel &gt;测试逻辑，状态转换定义，如收到什么样的数据包之后，发出什么样对应的数据包&lt;/StateModel&gt; </span><br><span class="line">&lt;Agent &gt;检测 exception，crash 等 &lt;/Agent&gt; </span><br><span class="line">&lt;Test &gt;指定将要使用到的 state，agent，publisher 等&lt;/Test&gt;</span><br><span class="line">&lt;Run &gt;Fuzzer 执行的进入点&lt;/Run&gt; &lt;/Peach&gt;</span><br><span class="line">1)整个文件被一个大标签&lt;Peach&gt; &lt;/Peach&gt;包括。 </span><br><span class="line"></span><br><span class="line">2)文件中的第二级标签包括 Include，DataModel，StateModel，Agent，Test，Run 共 6种。 </span><br><span class="line"></span><br><span class="line">3)Include 包含的外部文件，其中 defaults.xml 和 PeachTypes.xml 是必须的，里边含有Peach的基本方法、类、数据类型等。 </span><br><span class="line"></span><br><span class="line">4)DataModel 用于定义数据结构，此标签下还可以有若干级、若干种下级标签。使用这些子标签可以比较容易的定义数据的类型，大小，各个数据块之间的关系， 以及 CRC 校验和等。还可以定义多个 DataModel，多个 DataModel之间可以有关系也可以没有关系。</span><br><span class="line"></span><br><span class="line">5)StateModel 用于定义测试的逻辑，实际上相当于一个状态机。下级标签包括 State， 每个 State 中又可以包含若干个 Action 标签。State 表示一个状 态，不同的 State 之间可以根 据一些判断条件进行跳转。Action 用于执行打开文件，发送数据包之类的命令。 </span><br><span class="line"></span><br><span class="line">6)Agent 是一个主要功能是用来监测被测目标的反应，如 crash 等。 7)Test 这个标签域比较简单，一般只是制定使用哪个 Agent，哪个 StateModel，用什么 方法发数据，有时还会指定使用什么方法加工(变异)数据。 8)Run 这个标签域也比较简单，指定当前这次 Fuzz 测试使用哪个 Test。</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="include配置"><a href="#include配置" class="headerlink" title="include配置"></a>include配置</h2><p>include元素允许把其他pit文件包含到当前的pit文件下使用。</p>
+<h2 id="datamodel配置"><a href="#datamodel配置" class="headerlink" title="datamodel配置"></a>datamodel配置</h2><p>pit文件至少包含一个datamodel元素，datamodel描述的数据包括类型信息，关系信息(大小，数目，偏移)和其他让模糊器执行智能变异的信息。<br>datamodel时peach根元素的子元素之一，它通过添加子元素（Number、Blob等）的方式定义了数据块的结构。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">属性：</span><br><span class="line">Name--必须的</span><br><span class="line">Ref--可选的，引用一个datamodel模板</span><br><span class="line">Mutable--可选的，表示该元素是否可变异</span><br><span class="line">Constraint--可选的（不是很理解这个）</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">子元素：</span><br><span class="line">Block，Choice，Number，Padding，String</span><br></pre></td></tr></table></figure>
+
+<h2 id="statemodel配置"><a href="#statemodel配置" class="headerlink" title="statemodel配置"></a>statemodel配置</h2><p>statemodel重新创建测试一个协议所必须的基本状态机器逻辑。它定义了怎么给目标发送和接收数据。<br>statemodel包含一个子元素state，state封装了一个为peach工作的逻辑单元，进而来执行一个大的状态逻辑。state由action组成，每个action用以执行，与单个状态如何封装逻辑相关的任务。<br>action元素能在statemodel中执行多种操作，action是发送命令给publisher的一种主要方式，他能够发送输出，接收输入或打开一个链接，action也能在statemodel中改为其他状态，在datamodel之间移动数据，调用被代理定义的方法。<br>说实话，这段介绍真的是晦涩难懂，如果没有实例会非常难理解。所以我用了文档中的几个例子尝试给出我的理解：</p>
+<ol>
+<li>文件fuzzing<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">StateModel</span> <span class="attr">name</span>=<span class="string">&quot;TheStateModel&quot;</span> <span class="attr">initialState</span>=<span class="string">&quot;InitialState&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">State</span> <span class="attr">name</span>=<span class="string">&quot;InitialState&quot;</span>&gt;</span><span class="comment">&lt;!--state是定义一个具体状态--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;output&quot;</span>&gt;</span><span class="comment">&lt;!--定义在state中执行的动作--&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">ref</span>=<span class="string">&quot;TestTemplate&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;close&quot;</span> /&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--type是指定动作类型--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;call&quot;</span><span class="attr">method</span>=<span class="string">&quot;ScoobySnacks&quot;</span> <span class="attr">publisher</span>=<span class="string">&quot;Peach.Agent&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--输出数据，断开连接，调用scoobysnacks方法--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">StateModel</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>简单网络状态模型<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">StateModel</span> <span class="attr">name</span>=<span class="string">&quot;TheStateModel&quot;</span> <span class="attr">initialState</span>=<span class="string">&quot;InitialState&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">State</span> <span class="attr">name</span>=<span class="string">&quot;InitialState&quot;</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--发送数据--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;output&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">ref</span>=<span class="string">&quot;PacketModel1&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--接受回应--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;input&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">ref</span>=<span class="string">&quot;PacketModel2&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--发送数据--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;output&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">ref</span>=<span class="string">&quot;PacketModel3&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--接受回应--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;input&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">ref</span>=<span class="string">&quot;PacketModel4&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">StateModel</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">Test</span> <span class="attr">name</span>=<span class="string">&quot;Default&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">StateModel</span> <span class="attr">ref</span>=<span class="string">&quot;TheStateModel&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">Publisher</span> <span class="attr">class</span>=<span class="string">&quot;TcpClient&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Param</span> <span class="attr">name</span>=<span class="string">&quot;Host&quot;</span> <span class="attr">value</span>=<span class="string">&quot;127.0.0.1&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Param</span> <span class="attr">name</span>=<span class="string">&quot;Port&quot;</span> <span class="attr">value</span>=<span class="string">&quot;4242&quot;</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Publisher</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Test</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="agent配置"><a href="#agent配置" class="headerlink" title="agent配置"></a>agent配置</h2><p>代理（Agent）是用于与目标应用程序进行通信的组件。代理充当中间层，负责在 Peach Fuzzer 和目标应用程序之间传递数据，执行操作，并监视应用程序的行为。<br>常用的代理：</p>
+<ol>
+<li>本地代理，如果不指定的话，这是一个默认的代理类型<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Agent</span> <span class="attr">name</span>=<span class="string">&quot;LocalAgent&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Monitor</span> <span class="attr">class</span>=<span class="string">&quot;tide&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Monitor</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Agent</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>TCP代理，这个代理存活在本地或者远程的一个进程中，通过TCP远程完成链接<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Agent</span> <span class="attr">name</span>=<span class="string">&quot;RemoteAgent&quot;</span> <span class="attr">location</span>=<span class="string">&quot;tcp://10.211.55.3:9001&quot;</span> &gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Monitor</span> <span class="attr">class</span>=<span class="string">&quot;tide&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Monitor</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Agent</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="monitor配置"><a href="#monitor配置" class="headerlink" title="monitor配置"></a>monitor配置</h2><p>主要有以下几种监视器：windows 监视器、OSX 监视器、Linux 监视器和跨平台监视器</p>
+<h2 id="test配置"><a href="#test配置" class="headerlink" title="test配置"></a>test配置</h2><p>Test 元素被用于配置一个指定的 fuzzing 测试，这个配置通过一个 Publisher 和其他选项 （比如 including&#x2F;excluding 等被变异的元素、Agents、fuzzing 策略）组合成一个 StateModel。 多个 test 元素是支持的，在 Peach 命令行使用中，只需简单提供 test 元素的名字即可。<br>简单来说就是指定哪个Agent，statemodel，publisher的哪个方法发送数据，使用什么方法变异数据。可以有多个test，用的时候指定就行。<br>就不贴代码了，具体的放到实例里面写吧。</p>
+<h2 id="loggers配置"><a href="#loggers配置" class="headerlink" title="loggers配置"></a>loggers配置</h2><p>peach有一个可拓展的记录系统，它允许使用者存储想要的记录，默认情况下，peach使用一个单独的文件系统记录器。</p>
+<h2 id="strategy配置"><a href="#strategy配置" class="headerlink" title="strategy配置"></a>strategy配置</h2><p>这是变异策略的选择，具体包含：<br>Random：默认会随机选择最⼤大6个元素（可以通过参数MaxFieldsToMutate设置）利用随机mutator（变异器）进⾏变异。<br>Sequential：Peach会顺序对每个元素使⽤用其所有可⽤用的Mutators进行变异。<br>RandomDeterministic：Peach默认规则。这个规则对pit xml⽂文件中元素根据Mutators⽣成的Iterations链表做相对随机（由链表中元素数目决 定）的顺序混淆，所以每个xml⽂文件每次运行生成的测试⽤例多少、顺序固定，这样才能保证skipto的准确性。<br>Peach3包括元素增、删、改、交换，经验值，逐位、双字等Mutators</p>
+<hr>
+<p>至此，peach的大部分逻辑都已经学习完毕，有些配置的属性和细节在具体编写的过程中再完善。<br>总结：Peach Fuzzer 是一款用于自动化测试和模糊测试的工具，主要用于发现应用程序和系统中的安全漏洞。其原理和工作方式如下：</p>
+<ol>
+<li><p><strong>数据模型定义：</strong> Peach 使用 XML 格式的数据模型（Peach Pit）来描述目标应用程序或系统的通信协议、数据格式和消息结构。数据模型定义了待测应用程序的输入空间。</p>
+</li>
+<li><p><strong>生成测试用例：</strong> Peach 使用数据模型中定义的生成器（Generators）来生成测试用例。生成器负责产生具有不同变体的输入数据，以测试目标应用程序的各种情况。生成器可以包括静态字符串、重复器、变异器等。</p>
+</li>
+<li><p><strong>变异策略：</strong> Peach 使用变异器（Mutators）来对生成的测试用例进行变异。变异器会修改生成的输入数据，以模拟潜在的攻击场景或不同的输入情况。变异可以是顺序的，也可以是随机的，以增加测试用例的多样性。</p>
+</li>
+<li><p><strong>发送测试用例：</strong> Peach 将生成的测试用例发送到目标应用程序，模拟实际的输入。这可以通过网络协议、文件传输或其他通信方式完成，具体取决于目标应用程序的特性。</p>
+</li>
+<li><p><strong>监控和分析：</strong> Peach 使用监控器（Monitors）来监视目标应用程序的行为。监控器可以捕获应用程序的崩溃、错误信息、异常行为等。Peach 还可以定义规则来分析应用程序的响应，以检测潜在的安全漏洞。</p>
+</li>
+<li><p><strong>反馈机制：</strong> 如果监控器检测到异常行为或潜在的漏洞，Peach 将记录相关信息，如崩溃堆栈、错误消息等。这些信息可以用于生成新的测试用例，以深入挖掘漏洞。</p>
+</li>
+<li><p><strong>迭代测试：</strong> Peach 迭代执行上述过程，生成新的测试用例并不断测试目标应用程序，直到达到预定的测试目标或发现潜在的漏洞。</p>
+</li>
+</ol>
+<p>总体来说，Peach Fuzzer通过自动化生成、变异和发送测试用例，结合监控和分析目标应用程序的响应，来寻找潜在的安全漏洞。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" rel="tag"># 模糊测试</a>
+              <a href="/tags/peach/" rel="tag"># peach</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/01/AFL%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="prev" title="AFL源码阅读">
+      <i class="fa fa-chevron-left"></i> AFL源码阅读
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Peach-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">Peach 是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">使用流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pit%E6%96%87%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">Pit文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#include%E9%85%8D%E7%BD%AE"><span class="nav-number">4.1.</span> <span class="nav-text">include配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#datamodel%E9%85%8D%E7%BD%AE"><span class="nav-number">4.2.</span> <span class="nav-text">datamodel配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#statemodel%E9%85%8D%E7%BD%AE"><span class="nav-number">4.3.</span> <span class="nav-text">statemodel配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#agent%E9%85%8D%E7%BD%AE"><span class="nav-number">4.4.</span> <span class="nav-text">agent配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#monitor%E9%85%8D%E7%BD%AE"><span class="nav-number">4.5.</span> <span class="nav-text">monitor配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#test%E9%85%8D%E7%BD%AE"><span class="nav-number">4.6.</span> <span class="nav-text">test配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loggers%E9%85%8D%E7%BD%AE"><span class="nav-number">4.7.</span> <span class="nav-text">loggers配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strategy%E9%85%8D%E7%BD%AE"><span class="nav-number">4.8.</span> <span class="nav-text">strategy配置</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sparrow"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sparrow</p>
+  <div class="site-description" itemprop="description">不知所措才是人生</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huamuyichun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huamuyichun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2486013181@qq.com" title="E-Mail → mailto:2486013181@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/hejiawenze" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;hejiawenze" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>Google</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2023-04 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sparrow</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共25.7k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
